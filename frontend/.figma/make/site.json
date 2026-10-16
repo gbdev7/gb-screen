@@ -1,0 +1,10 @@
+{
+  "description": "Effortlessly share your screen in real-time via a private link with no installation required, perfect for seamless online collaboration.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

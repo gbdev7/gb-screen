@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+livekit:
+  api-key: APIHb8fo3vvBTpb
+  api-secret: Mradjx8ofQouef2MMLbN90se7iNoLLjVv9J7FxCqtXBD
+
+spring:
+  application:
+    name: screenlink
