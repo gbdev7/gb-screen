@@ -5,13 +5,18 @@ import com.gbscreen.dto.response.TokenResponse;
 import com.gbscreen.service.LiveKitTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/rooms")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = "*",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.PUT, RequestMethod.DELETE}
+)
 public class RoomController {
 
     private final LiveKitTokenService tokenService;
