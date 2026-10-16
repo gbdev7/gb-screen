@@ -9,7 +9,12 @@ import {
 import { Track } from "livekit-client";
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://gb-screen.onrender.com/api/rooms";
+
+// Tratamento para evitar barras duplicadas na URL base da API
+const RAW_API_URL = import.meta.env.VITE_API_URL || "https://gb-screen.onrender.com";
+const API_BASE_URL = RAW_API_URL.endsWith("/api/rooms")
+    ? RAW_API_URL
+    : `${RAW_API_URL.replace(/\/$/, "")}/api/rooms`;
 
 type IconName =
     | "arrow"
@@ -124,7 +129,7 @@ function Landing() {
 
       navigate(`/room/${data.roomId}`);
     } catch {
-      alert("Erro ao conectar com o backend Spring Boot. Verifique se o servidor está rodando.");
+      alert("O servidor backend está inicializando ou indisponível. Aguarde alguns segundos e tente novamente.");
     } finally {
       setLoading(false);
     }
