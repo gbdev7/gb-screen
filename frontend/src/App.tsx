@@ -9,7 +9,7 @@ import {
 import { Track } from "livekit-client";
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
-const API_BASE_URL = "http://localhost:8080/api/rooms";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://gb-screen.onrender.com/api/rooms";
 
 type IconName =
     | "arrow"
