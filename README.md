@@ -60,4 +60,5 @@ Construir uma aplicação funcional de compartilhamento de tela e aprofundar con
 O GB Screen faz parte da minha jornada como desenvolvedor, na qual busco transformar conceitos técnicos em aplicações reais, enfrentar problemas de implementação e compreender como os diferentes componentes de um sistema trabalham juntos.
 
 Desenvolvido por Gabriel Pereira da Silva
+https://gb-screen-seven.vercel.app/
 GitHub: @gbdev7
