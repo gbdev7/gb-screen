@@ -18,19 +18,24 @@ public class LiveKitTokenService {
 
     public String createToken(String roomId, String participantName, boolean isHost) {
         if (apiSecret == null || apiSecret.isBlank()) {
-            throw new IllegalStateException("LIVEKIT_API_SECRET não está configurada nas variáveis do Render!");
+            throw new IllegalStateException("LIVEKIT_API_SECRET não foi configurado no Render.");
         }
 
-        AccessToken token = new AccessToken(apiKey, apiSecret);
+        // Remove eventuais espaços acidentais nas chaves
+        String cleanKey = apiKey.trim();
+        String cleanSecret = apiSecret.trim();
+
+        AccessToken token = new AccessToken(cleanKey, cleanSecret);
 
         token.setName(participantName);
         token.setIdentity(participantName + "-" + System.currentTimeMillis());
 
-        // Permissões padrão para entrar e identificar a sala
+        // Define tempo de vida do token para 24 horas (em segundos)
+        token.setTtl(86400L);
+
         token.addGrants(new RoomJoin(true));
         token.addGrants(new RoomName(roomId));
 
-        // Permissão de administrador para o anfitrião gerenciar/publicar mídia
         if (isHost) {
             token.addGrants(new RoomAdmin(true));
         }
