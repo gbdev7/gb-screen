@@ -6,7 +6,7 @@ import {
   useTracks,
   useLocalParticipant
 } from "@livekit/components-react";
-import { Track } from "livekit-client";
+import { Track, VideoPreset, VideoPresets } from "livekit-client";
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
 
@@ -24,8 +24,11 @@ type IconName =
     | "link"
     | "monitor"
     | "radio"
+    | "settings"
     | "shield"
     | "spark"
+    | "volumeHigh"
+    | "volumeMute"
     | "x";
 
 function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
@@ -33,13 +36,16 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
     check: <path d="m5 12 4 4L19 6" />,
     copy: <><rect width="13" height="13" x="9" y="9" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></>,
-    expand: <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 1 2 2v-3" /></>,
+    expand: <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></>,
     github: <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3.5S18.2.1 15 1.8a13.4 13.4 0 0 0-7 0C4.8.1 3.7.5 3.7.5A5 5 0 0 0 3.6 4a5.4 5.4 0 0 0-1.4 3.7c0 5.3 3.5 6.5 6.8 6.9a4.8 4.8 0 0 0-1 3.4v4" />,
     link: <><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1" /><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1" /></>,
     monitor: <><rect width="20" height="14" x="2" y="3" rx="2" /><path d="M8 21h8M12 17v4" /></>,
     radio: <><circle cx="12" cy="12" r="2" /><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4" /><path d="M19.1 4.9a10 10 0 0 1 0 14.2M4.9 19.1a10 10 0 0 1 0-14.2" /></>,
+    settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" /></>,
     shield: <><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3Z" /><path d="m9 12 2 2 4-4" /></>,
     spark: <path d="m13 2-2 7H4l6 4-2 9 9-11h-7l3-9Z" />,
+    volumeHigh: <><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></>,
+    volumeMute: <><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" /></>,
     x: <><path d="m18 6-12 12M6 6l12 12" /></>,
   };
 
@@ -262,7 +268,6 @@ function RoomHeader({
   const [copied, setCopied] = useState(false);
 
   async function copyCodeOnly() {
-    // Copia estritamente apenas o código de 8 caracteres da sala
     await navigator.clipboard?.writeText(roomId);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
@@ -304,8 +309,30 @@ function RoomHeader({
   );
 }
 
-function StreamViewer({ isHost, onStart }: { isHost: boolean; onStart: () => void }) {
+function StreamViewer({
+                        isHost,
+                        onStart,
+                        selectedPreset,
+                        onPresetChange
+                      }: {
+  isHost: boolean;
+  onStart: () => void;
+  selectedPreset: string;
+  onPresetChange: (preset: string) => void;
+}) {
   const tracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
+  const [volume, setVolume] = useState<number>(1);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Aplica o volume diretamente aos elementos de áudio/vídeo recebidos
+    const mediaElements = document.querySelectorAll("video, audio");
+    mediaElements.forEach((el) => {
+      if (el instanceof HTMLMediaElement) {
+        el.volume = isMuted ? 0 : volume;
+      }
+    });
+  }, [volume, isMuted, tracks]);
 
   function toggleFullscreen() {
     const element = document.querySelector(".player");
@@ -343,12 +370,62 @@ function StreamViewer({ isHost, onStart }: { isHost: boolean; onStart: () => voi
       <>
         <VideoTrack trackRef={tracks[0]} className="livekit-video-track" />
         <div className="live-tag"><i /> Transmissão ao vivo</div>
-        {!isHost && (
-            <div className="viewer-controls">
-              <span className="connection connection--live"><i /> Conexão estável</span>
-              <Button kind="ghost" onClick={toggleFullscreen}><Icon name="expand" size={18} /> Tela cheia</Button>
-            </div>
-        )}
+
+        {/* Controles de Player (Volume, Qualidade e Tela Cheia) */}
+        <div className="viewer-controls" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          {/* Seletor de Volume */}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <button
+                type="button"
+                onClick={() => setIsMuted(!isMuted)}
+                style={{ background: "transparent", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center" }}
+                title={isMuted ? "Desmutar" : "Mutar"}
+            >
+              <Icon name={isMuted || volume === 0 ? "volumeMute" : "volumeHigh"} size={18} />
+            </button>
+            <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={isMuted ? 0 : volume}
+                onChange={(e) => {
+                  setVolume(parseFloat(e.target.value));
+                  setIsMuted(false);
+                }}
+                style={{ width: "80px", cursor: "pointer" }}
+                title="Ajustar Volume"
+            />
+          </div>
+
+          {/* Seletor de Qualidade */}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <Icon name="settings" size={16} />
+            <select
+                value={selectedPreset}
+                onChange={(e) => onPresetChange(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: "6px",
+                  padding: "4px 8px",
+                  fontSize: "12px",
+                  cursor: "pointer"
+                }}
+            >
+              <option value="1080p" style={{ color: "#000" }}>1080p · Alta (FHD)</option>
+              <option value="720p" style={{ color: "#000" }}>720p · Média (HD)</option>
+              <option value="480p" style={{ color: "#000" }}>480p · Baixa (Fluida)</option>
+            </select>
+          </div>
+
+          {!isHost && (
+              <Button kind="ghost" onClick={toggleFullscreen}>
+                <Icon name="expand" size={18} /> Tela cheia
+              </Button>
+          )}
+        </div>
       </>
   );
 }
@@ -356,8 +433,22 @@ function StreamViewer({ isHost, onStart }: { isHost: boolean; onStart: () => voi
 function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
   const { localParticipant } = useLocalParticipant();
   const screenShareTracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
+  const [selectedPreset, setSelectedPreset] = useState<string>("1080p");
 
   const isSharing = screenShareTracks.some(t => t.participant.identity === localParticipant.identity);
+
+  // Mapeia a escolha do usuário para as especificações de captura do LiveKit
+  function getPresetResolution(presetName: string): VideoPreset {
+    switch (presetName) {
+      case "720p":
+        return VideoPresets.h720;
+      case "480p":
+        return VideoPresets.h480;
+      case "1080p":
+      default:
+        return VideoPresets.h1080;
+    }
+  }
 
   async function handleToggleShare() {
     if (isSharing) {
@@ -368,15 +459,35 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
       }
     } else {
       try {
-        // Tenta capturar tela + áudio do sistema (ex: áudio da aba ou do computador)
-        await localParticipant.setScreenShareEnabled(true, { audio: true });
+        await localParticipant.setScreenShareEnabled(true, {
+          audio: true,
+          resolution: getPresetResolution(selectedPreset)
+        });
       } catch {
         try {
-          // Fallback: se o sistema/navegador recusar a captura de áudio, transmite apenas o vídeo
-          await localParticipant.setScreenShareEnabled(true, { audio: false });
+          await localParticipant.setScreenShareEnabled(true, {
+            audio: false,
+            resolution: getPresetResolution(selectedPreset)
+          });
         } catch (e) {
           console.error("Permissão negada ou falha ao capturar tela:", e);
         }
+      }
+    }
+  }
+
+  async function handlePresetChange(newPreset: string) {
+    setSelectedPreset(newPreset);
+    if (isSharing) {
+      // Re-aplica a qualidade em tempo real sem precisar interromper a sala
+      try {
+        await localParticipant.setScreenShareEnabled(false);
+        await localParticipant.setScreenShareEnabled(true, {
+          audio: true,
+          resolution: getPresetResolution(newPreset)
+        });
+      } catch (e) {
+        console.error("Erro ao alterar qualidade durante a transmissão:", e);
       }
     }
   }
@@ -399,7 +510,12 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
           </div>
 
           <div className="player player--live">
-            <StreamViewer isHost={isHost} onStart={handleToggleShare} />
+            <StreamViewer
+                isHost={isHost}
+                onStart={handleToggleShare}
+                selectedPreset={selectedPreset}
+                onPresetChange={handlePresetChange}
+            />
           </div>
           <p className="security-note">
             <Icon name="shield" size={15} /> A transmissão é protegida e visível apenas para quem tem o código.
