@@ -10,7 +10,6 @@ import { Track } from "livekit-client";
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
 
-// Tratamento para evitar barras duplicadas na URL base da API
 const RAW_API_URL = import.meta.env.VITE_API_URL || "https://gb-screen.onrender.com";
 const API_BASE_URL = RAW_API_URL.endsWith("/api/rooms")
     ? RAW_API_URL
@@ -252,33 +251,21 @@ function Landing() {
 function RoomHeader({
                       roomId,
                       isHost,
+                      isSharing,
+                      onToggleShare
                     }: {
   roomId: string;
   isHost: boolean;
+  isSharing: boolean;
+  onToggleShare: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const { localParticipant } = useLocalParticipant();
-  const [isSharing, setIsSharing] = useState(false);
 
   async function copyInvite() {
     const url = `${window.location.origin}/room/${roomId}`;
     await navigator.clipboard?.writeText(url);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
-  }
-
-  async function toggleShare() {
-    if (isSharing) {
-      await localParticipant.setScreenShareEnabled(false);
-      setIsSharing(false);
-    } else {
-      try {
-        await localParticipant.setScreenShareEnabled(true, { audio: true });
-        setIsSharing(true);
-      } catch (e) {
-        console.error("Permissão de tela negada ou erro ao capturar", e);
-      }
-    }
   }
 
   async function endRoom() {
@@ -305,7 +292,7 @@ function RoomHeader({
         </button>
         {isHost && (
             <div className="header-actions">
-              <Button onClick={toggleShare}>
+              <Button onClick={onToggleShare}>
                 <Icon name="radio" size={18} /> {isSharing ? "Parar Transmissão" : "Iniciar Transmissão"}
               </Button>
               <Button kind="danger" onClick={endRoom}>
@@ -317,9 +304,8 @@ function RoomHeader({
   );
 }
 
-function StreamViewer({ isHost }: { isHost: boolean }) {
+function StreamViewer({ isHost, onStart }: { isHost: boolean; onStart: () => void }) {
   const tracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
-  const { localParticipant } = useLocalParticipant();
 
   function toggleFullscreen() {
     const element = document.querySelector(".player");
@@ -345,7 +331,7 @@ function StreamViewer({ isHost }: { isHost: boolean }) {
                 : "A transmissão aparecerá aqui assim que o anfitrião compartilhar a tela."}
           </p>
           {isHost && (
-              <Button onClick={() => localParticipant.setScreenShareEnabled(true, { audio: true })}>
+              <Button onClick={onStart}>
                 <Icon name="radio" size={18} /> Iniciar agora
               </Button>
           )}
@@ -363,6 +349,53 @@ function StreamViewer({ isHost }: { isHost: boolean }) {
               <Button kind="ghost" onClick={toggleFullscreen}><Icon name="expand" size={18} /> Tela cheia</Button>
             </div>
         )}
+      </>
+  );
+}
+
+function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
+  const { localParticipant } = useLocalParticipant();
+  const [isSharing, setIsSharing] = useState(false);
+
+  async function handleToggleShare() {
+    if (isSharing) {
+      await localParticipant.setScreenShareEnabled(false);
+      setIsSharing(false);
+    } else {
+      try {
+        // Tenta capturar sem forçar a faixa de áudio para não travar
+        await localParticipant.setScreenShareEnabled(true, { audio: false });
+        setIsSharing(true);
+      } catch (e) {
+        console.error("Permissão negada ou falha na captura:", e);
+      }
+    }
+  }
+
+  return (
+      <>
+        <RoomHeader
+            roomId={roomId}
+            isHost={isHost}
+            isSharing={isSharing}
+            onToggleShare={handleToggleShare}
+        />
+        <section className="room-main">
+          <div className="room-meta">
+            <div>
+              <span className="room-kicker">{isHost ? "Sua sala privada" : "Transmissão compartilhada"}</span>
+              <h1>{isHost ? "Pronto para apresentar?" : "Sala de transmissão"}</h1>
+            </div>
+            <span className="connection connection--live"><i /> Conectado</span>
+          </div>
+
+          <div className="player player--live">
+            <StreamViewer isHost={isHost} onStart={handleToggleShare} />
+          </div>
+          <p className="security-note">
+            <Icon name="shield" size={15} /> A transmissão é protegida e visível apenas para quem tem o link.
+          </p>
+        </section>
       </>
   );
 }
@@ -422,23 +455,7 @@ function Room() {
           data-lk-theme="default"
           className="room-page"
       >
-        <RoomHeader roomId={roomId} isHost={isHost} />
-        <section className="room-main">
-          <div className="room-meta">
-            <div>
-              <span className="room-kicker">{isHost ? "Sua sala privada" : "Transmissão compartilhada"}</span>
-              <h1>{isHost ? "Pronto para apresentar?" : "Sala de transmissão"}</h1>
-            </div>
-            <span className="connection connection--live"><i /> Conectado</span>
-          </div>
-
-          <div className="player player--live">
-            <StreamViewer isHost={isHost} />
-          </div>
-          <p className="security-note">
-            <Icon name="shield" size={15} /> A transmissão é protegida e visível apenas para quem tem o link.
-          </p>
-        </section>
+        <RoomContent roomId={roomId} isHost={isHost} />
         <RoomAudioRenderer />
       </LiveKitRoom>
   );
