@@ -33,7 +33,7 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
     check: <path d="m5 12 4 4L19 6" />,
     copy: <><rect width="13" height="13" x="9" y="9" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></>,
-    expand: <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></>,
+    expand: <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 1 2 2v-3" /></>,
     github: <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3.5S18.2.1 15 1.8a13.4 13.4 0 0 0-7 0C4.8.1 3.7.5 3.7.5A5 5 0 0 0 3.6 4a5.4 5.4 0 0 0-1.4 3.7c0 5.3 3.5 6.5 6.8 6.9a4.8 4.8 0 0 0-1 3.4v4" />,
     link: <><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1" /><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1" /></>,
     monitor: <><rect width="20" height="14" x="2" y="3" rx="2" /><path d="M8 21h8M12 17v4" /></>,
@@ -261,9 +261,9 @@ function RoomHeader({
 }) {
   const [copied, setCopied] = useState(false);
 
-  async function copyInvite() {
-    const url = `${window.location.origin}/room/${roomId}`;
-    await navigator.clipboard?.writeText(url);
+  async function copyCodeOnly() {
+    // Copia estritamente apenas o código de 8 caracteres da sala
+    await navigator.clipboard?.writeText(roomId);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
   }
@@ -285,10 +285,10 @@ function RoomHeader({
   return (
       <header className="room-header">
         <Brand role={isHost ? "Anfitrião" : "Espectador"} />
-        <button className="room-code" onClick={copyInvite} aria-label="Copiar link da sala">
+        <button className="room-code" onClick={copyCodeOnly} aria-label="Copiar código da sala">
           <span className={copied ? "copied" : ""}><Icon name={copied ? "check" : "copy"} size={17} /></span>
-          <span>Sala: <strong>{roomId}</strong></span>
-          <small>{copied ? "Copiado" : "Copiar convite"}</small>
+          <span>Código: <strong>{roomId}</strong></span>
+          <small>{copied ? "Copiado!" : "Copiar código"}</small>
         </button>
         {isHost && (
             <div className="header-actions">
@@ -357,7 +357,6 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
   const { localParticipant } = useLocalParticipant();
   const screenShareTracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
 
-  // Sincroniza o estado visual com a presença real de faixas de mídia publicadas pelo participante
   const isSharing = screenShareTracks.some(t => t.participant.identity === localParticipant.identity);
 
   async function handleToggleShare() {
@@ -397,7 +396,7 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
             <StreamViewer isHost={isHost} onStart={handleToggleShare} />
           </div>
           <p className="security-note">
-            <Icon name="shield" size={15} /> A transmissão é protegida e visível apenas para quem tem o link.
+            <Icon name="shield" size={15} /> A transmissão é protegida e visível apenas para quem tem o código.
           </p>
         </section>
       </>
