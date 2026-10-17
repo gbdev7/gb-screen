@@ -21,13 +21,19 @@ public class LiveKitTokenService {
         token.setName(participantName);
         token.setIdentity(participantName + "-" + System.currentTimeMillis());
 
-        // Adiciona permissões de entrada e identificação de sala
+        // Habilita entrada e nome da sala
         token.addGrants(new RoomJoin(true));
         token.addGrants(new RoomName(roomId));
 
-        // Define as permissões de publicação e inscrição do participante
+        // Permissões explícitas para publicação e inscrição de vídeo/áudio
         if (isHost) {
             token.addGrants(new io.livekit.server.RoomAdmin(true));
+            token.addGrants(new io.livekit.server.CanPublish(true));
+            token.addGrants(new io.livekit.server.CanSubscribe(true));
+            token.addGrants(new io.livekit.server.CanPublishData(true));
+        } else {
+            token.addGrants(new io.livekit.server.CanPublish(false));
+            token.addGrants(new io.livekit.server.CanSubscribe(true));
         }
 
         return token.toJwt();
