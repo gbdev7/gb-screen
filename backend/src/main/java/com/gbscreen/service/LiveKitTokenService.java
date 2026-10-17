@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LiveKitTokenService {
 
-    @Value("${livekit.api-key:APIpHArL2DniK7Z}")
+    @Value("${livekit.api-key:APIHb8fo3vvBTpb}")
     private String apiKey;
 
     @Value("${livekit.api-secret}")
