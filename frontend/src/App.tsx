@@ -355,19 +355,23 @@ function StreamViewer({ isHost, onStart }: { isHost: boolean; onStart: () => voi
 
 function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
   const { localParticipant } = useLocalParticipant();
-  const [isSharing, setIsSharing] = useState(false);
+  const screenShareTracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
+
+  // Sincroniza o estado visual com a presença real de faixas de mídia publicadas pelo participante
+  const isSharing = screenShareTracks.some(t => t.participant.identity === localParticipant.identity);
 
   async function handleToggleShare() {
     if (isSharing) {
-      await localParticipant.setScreenShareEnabled(false);
-      setIsSharing(false);
+      try {
+        await localParticipant.setScreenShareEnabled(false);
+      } catch (e) {
+        console.error("Erro ao interromper compartilhamento:", e);
+      }
     } else {
       try {
-        // Tenta capturar sem forçar a faixa de áudio para não travar
-        await localParticipant.setScreenShareEnabled(true, { audio: false });
-        setIsSharing(true);
+        await localParticipant.setScreenShareEnabled(true);
       } catch (e) {
-        console.error("Permissão negada ou falha na captura:", e);
+        console.error("Permissão negada ou falha ao capturar tela:", e);
       }
     }
   }
