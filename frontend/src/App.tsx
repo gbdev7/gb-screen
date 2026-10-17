@@ -368,9 +368,15 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
       }
     } else {
       try {
-        await localParticipant.setScreenShareEnabled(true);
-      } catch (e) {
-        console.error("Permissão negada ou falha ao capturar tela:", e);
+        // Tenta capturar tela + áudio do sistema (ex: áudio da aba ou do computador)
+        await localParticipant.setScreenShareEnabled(true, { audio: true });
+      } catch {
+        try {
+          // Fallback: se o sistema/navegador recusar a captura de áudio, transmite apenas o vídeo
+          await localParticipant.setScreenShareEnabled(true, { audio: false });
+        } catch (e) {
+          console.error("Permissão negada ou falha ao capturar tela:", e);
+        }
       }
     }
   }
