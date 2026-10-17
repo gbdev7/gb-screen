@@ -15,7 +15,7 @@ O GB Screen é um projeto desenvolvido para tornar o compartilhamento de tela si
 A aplicação utiliza tecnologias de comunicação em tempo real para conectar os participantes e transmitir a tela capturada pelo navegador. O projeto foi desenvolvido com foco na integração entre frontend, backend e infraestrutura em nuvem, explorando os desafios envolvidos na construção e publicação de uma aplicação de streaming em tempo real.
 
 🔗 Aplicação: Acessar GB Screen
-📂 Repositório: github.com/gbdev7/gb-screen
+📂 Site:https://gb-screen-seven.vercel.app/ 
 
 ✨ Sobre o projeto
 
