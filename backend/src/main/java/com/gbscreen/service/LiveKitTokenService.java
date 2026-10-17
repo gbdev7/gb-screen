@@ -1,7 +1,12 @@
 package com.gbscreen.service;
 
 import io.livekit.server.AccessToken;
-import io.livekit.server.VideoGrant;
+import io.livekit.server.CanPublish;
+import io.livekit.server.CanPublishData;
+import io.livekit.server.CanSubscribe;
+import io.livekit.server.RoomAdmin;
+import io.livekit.server.RoomJoin;
+import io.livekit.server.RoomName;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,23 +25,20 @@ public class LiveKitTokenService {
         token.setName(participantName);
         token.setIdentity(participantName + "-" + System.currentTimeMillis());
 
-        // Estrutura oficial de permissões de vídeo/áudio e sala
-        VideoGrant grant = new VideoGrant();
-        grant.setRoomJoin(true);
-        grant.setRoom(roomId);
+        // Adiciona permissões básicas de sala
+        token.addGrants(new RoomJoin(true));
+        token.addGrants(new RoomName(roomId));
 
+        // Permissões específicas de vídeo, áudio e dados
         if (isHost) {
-            grant.setCanPublish(true);
-            grant.setCanSubscribe(true);
-            grant.setCanPublishData(true);
-            grant.setRoomAdmin(true);
+            token.addGrants(new RoomAdmin(true));
+            token.addGrants(new CanPublish(true));
+            token.addGrants(new CanSubscribe(true));
+            token.addGrants(new CanPublishData(true));
         } else {
-            grant.setCanPublish(false);
-            grant.setCanSubscribe(true);
+            token.addGrants(new CanPublish(false));
+            token.addGrants(new CanSubscribe(true));
         }
-
-        // Associa o VideoGrant correto ao Token JWT
-        token.addGrant(grant);
 
         return token.toJwt();
     }
