@@ -94,9 +94,8 @@ function TextInput({
 function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
   return (
       <div className="brand-wrap">
-        <button className="brand" onClick={() => navigate("/")}>
-          <span className="brand-mark"><Icon name="link" size={18} /></span>
-          <span>GB <span>Screen</span></span>
+        <button className="brand" onClick={() => navigate("/")} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <img src="/logo.png" alt="GB Screen Logo" style={{ height: "32px", width: "auto" }} />
         </button>
         {role && <><span className="divider" /><span className="role-badge">{role}</span></>}
       </div>
