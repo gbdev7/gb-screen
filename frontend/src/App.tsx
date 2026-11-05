@@ -62,14 +62,26 @@ function Button({
                   type = "button",
                   onClick,
                   className = "",
+                  disabled = false,
                 }: {
   children: ReactNode;
   kind?: "primary" | "danger" | "ghost";
   type?: "button" | "submit";
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }) {
-  return <button type={type} onClick={onClick} className={`button button--${kind} ${className}`}>{children}</button>;
+  return (
+      <button
+          type={type}
+          onClick={onClick}
+          disabled={disabled}
+          className={`button button--${kind} ${className}`}
+          style={disabled ? { opacity: 0.65, cursor: "not-allowed" } : undefined}
+      >
+        {children}
+      </button>
+  );
 }
 
 function TextInput({
@@ -92,10 +104,38 @@ function TextInput({
 }
 
 function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
       <div className="brand-wrap">
-        <button className="brand" onClick={() => navigate("/")} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <img src="/logo.png" alt="GB Screen Logo" style={{ height: "32px", width: "auto" }} />
+        <button
+            className="brand"
+            onClick={() => navigate("/")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0
+            }}
+        >
+          {!imgError ? (
+              <img
+                  src="/logo.png"
+                  alt="GB Screen"
+                  onError={() => setImgError(true)}
+                  style={{ height: "34px", width: "auto" }}
+              />
+          ) : (
+              <>
+                <span className="brand-mark"><Icon name="link" size={18} /></span>
+                <span style={{ fontSize: "20px", fontWeight: "bold", color: "#fff" }}>
+                GB <span style={{ color: "#3b82f6" }}>Screen</span>
+              </span>
+              </>
+          )}
         </button>
         {role && <><span className="divider" /><span className="role-badge">{role}</span></>}
       </div>
@@ -112,6 +152,26 @@ function Landing() {
   const [roomCode, setRoomCode] = useState("");
   const [codeError, setCodeError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
+
+  const loadingMessages = [
+    "Ligando os motores...",
+    "Conectando ao servidor...",
+    "Preparando a sala privada...",
+    "Quase lá, só mais alguns segundos..."
+  ];
+
+  useEffect(() => {
+    let interval: number;
+    if (loading) {
+      interval = window.setInterval(() => {
+        setLoadingMsgIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 2500);
+    } else {
+      setLoadingMsgIndex(0);
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
 
   async function createRoom(event: FormEvent) {
     event.preventDefault();
@@ -208,8 +268,24 @@ function Landing() {
             <form onSubmit={createRoom}>
               <label htmlFor="name">Como devemos chamar você?</label>
               <TextInput value={name} onChange={setName} />
-              <Button type="submit" className="create-button">
-                {loading ? "Criando..." : <>Criar Sala Privada <Icon name="arrow" size={19} /></>}
+
+              <Button type="submit" className="create-button" disabled={loading}>
+                {loading ? (
+                    <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
+                    <span style={{
+                      width: "14px",
+                      height: "14px",
+                      border: "2px solid rgba(255,255,255,0.3)",
+                      borderTopColor: "#fff",
+                      borderRadius: "50%",
+                      display: "inline-block",
+                      animation: "spin 0.8s linear infinite"
+                    }} />
+                      {loadingMessages[loadingMsgIndex]}
+                  </span>
+                ) : (
+                    <>Criar Sala Privada <Icon name="arrow" size={19} /></>
+                )}
               </Button>
               <p className="form-note"><Icon name="shield" size={14} /> Sua sala é privada e expira automaticamente.</p>
             </form>
@@ -230,13 +306,31 @@ function Landing() {
                     }}
                     placeholder="Ex.: e9185203"
                     value={roomCode}
+                    disabled={loading}
                 />
-                <Button type="submit" kind="ghost">
+                <Button type="submit" kind="ghost" disabled={loading}>
                   {loading ? "..." : <>Conectar <Icon name="arrow" size={17} /></>}
                 </Button>
               </div>
               {codeError && <span className="join-error">{codeError}</span>}
             </form>
+
+            {loading && (
+                <div style={{ marginTop: "16px", width: "100%", background: "rgba(255,255,255,0.05)", borderRadius: "8px", padding: "10px 14px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ height: "4px", width: "100%", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" }}>
+                    <div style={{
+                      height: "100%",
+                      width: "60%",
+                      background: "#3b82f6",
+                      borderRadius: "2px",
+                      animation: "loadingBar 2s ease-in-out infinite"
+                    }} />
+                  </div>
+                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", display: "block", marginTop: "6px", textAlign: "center" }}>
+                  {loadingMessages[loadingMsgIndex]}
+                </span>
+                </div>
+            )}
           </div>
 
           <div className="benefits">
@@ -324,7 +418,6 @@ function StreamViewer({
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
   useEffect(() => {
-    // Aplica o volume diretamente aos elementos de áudio/vídeo recebidos
     const mediaElements = document.querySelectorAll("video, audio");
     mediaElements.forEach((el) => {
       if (el instanceof HTMLMediaElement) {
@@ -436,7 +529,6 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
 
   const isSharing = screenShareTracks.some(t => t.participant.identity === localParticipant.identity);
 
-  // Mapeia a escolha do usuário para as especificações de captura do LiveKit
   function getPresetResolution(presetName: string): VideoPreset {
     switch (presetName) {
       case "720p":
@@ -478,7 +570,6 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
   async function handlePresetChange(newPreset: string) {
     setSelectedPreset(newPreset);
     if (isSharing) {
-      // Re-aplica a qualidade em tempo real sem precisar interromper a sala
       try {
         await localParticipant.setScreenShareEnabled(false);
         await localParticipant.setScreenShareEnabled(true, {
