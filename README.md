@@ -17,7 +17,7 @@ O projeto utiliza uma arquitetura com frontend e backend separados, integrando u
 
 Mais do que uma interface para compartilhar telas, o GB Screen representa uma experiência prática com integração de serviços, autenticação, transmissão de mídia e implantação de aplicações em ambientes de nuvem.
 
-🔗 **Aplicação:** [Acessar o GB Screen](https://gb-screen.vercel.app/)
+🔗 **Aplicação:** [Acessar o GB Screen](https://gb-screen-seven.vercel.app/)
 
 📂 **Repositório:** [github.com/gbdev7/gb-screen](https://github.com/gbdev7/gb-screen)
 
