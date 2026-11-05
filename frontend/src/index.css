@@ -171,7 +171,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .connection--live { color: #6ee7b7; }
 .connection--live i, .live-tag i { background: #10b981; box-shadow: 0 0 10px #10b981; }
 
-/* Player de Vídeo Responsivo */
+/* Player de Vídeo e Enquadramento Sem Zoom */
 .player {
   position: relative;
   width: 100%;
@@ -185,7 +185,15 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   border-radius: 18px;
   box-shadow: 0 30px 80px rgba(0,0,0,.32);
 }
-.player video { width: 100%; height: 100%; object-fit: contain; background: #05070b; }
+
+.player video,
+.livekit-video-track {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important; /* Força o vídeo a caber sem cortes/zoom */
+  background: #05070b;
+}
+
 .player--live { border-color: rgba(16,185,129,.24); }
 
 .empty-state { position: relative; z-index: 1; max-width: 510px; padding: 25px; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -253,14 +261,17 @@ input[type="range"] { accent-color: #3b82f6; height: 4px; }
 
   .room-meta h1 { font-size: 18px; }
 
-  /* Mantém a proporção 16:9 correta do vídeo no mobile sem cortar */
   .player {
     aspect-ratio: 16 / 9 !important;
+    height: auto !important;
     min-height: auto !important;
     border-radius: 12px;
   }
 
-  /* Reposiciona a barra de volume e qualidade para não cobrir o vídeo no celular */
+  .livekit-video-track {
+    object-fit: contain !important;
+  }
+
   .viewer-controls {
     position: relative;
     right: auto;
