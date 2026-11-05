@@ -153,6 +153,8 @@ function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
 
 // Componente Modal de Doação (PIX)
 function DonateModal({ onClose }: { onClose: () => void }) {
+    const [imgError, setImgError] = useState(false);
+
     return (
         <div style={{
             position: "fixed",
@@ -214,9 +216,22 @@ function DonateModal({ onClose }: { onClose: () => void }) {
                     borderRadius: "14px",
                     display: "inline-block",
                     boxShadow: "0 8px 25px rgba(0,0,0,0.3)",
-                    marginBottom: "16px"
+                    marginBottom: "16px",
+                    minWidth: "180px",
+                    minHeight: "180px"
                 }}>
-                    <img src="/pix-qr.png" alt="QR Code PIX" style={{ width: "180px", height: "180px", display: "block" }} />
+                    {!imgError ? (
+                        <img
+                            src="/pix-qr.png"
+                            alt="QR Code PIX"
+                            onError={() => setImgError(true)}
+                            style={{ width: "180px", height: "180px", display: "block", objectFit: "contain" }}
+                        />
+                    ) : (
+                        <div style={{ width: "180px", height: "180px", display: "grid", placeItems: "center", color: "#000", fontSize: "12px" }}>
+                            Imagem não encontrada em /public/pix-qr.png
+                        </div>
+                    )}
                 </div>
 
                 <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
