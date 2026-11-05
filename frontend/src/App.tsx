@@ -22,6 +22,7 @@ type IconName =
     | "copy"
     | "expand"
     | "github"
+    | "heart"
     | "link"
     | "monitor"
     | "radio"
@@ -40,6 +41,7 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
         copy: <><rect width="13" height="13" x="9" y="9" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></>,
         expand: <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></>,
         github: <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3.5S18.2.1 15 1.8a13.4 13.4 0 0 0-7 0C4.8.1 3.7.5 3.7.5A5 5 0 0 0 3.6 4a5.4 5.4 0 0 0-1.4 3.7c0 5.3 3.5 6.5 6.8 6.9a4.8 4.8 0 0 0-1 3.4v4" />,
+        heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />,
         link: <><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1" /><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1" /></>,
         monitor: <><rect width="20" height="14" x="2" y="3" rx="2" /><path d="M8 21h8M12 17v4" /></>,
         radio: <><circle cx="12" cy="12" r="2" /><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4" /><path d="M19.1 4.9a10 10 0 0 1 0 14.2M4.9 19.1a10 10 0 0 1 0-14.2" /></>,
@@ -66,6 +68,7 @@ function Button({
                     onClick,
                     className = "",
                     disabled = false,
+                    style,
                 }: {
     children: ReactNode;
     kind?: "primary" | "danger" | "ghost";
@@ -73,6 +76,7 @@ function Button({
     onClick?: () => void;
     className?: string;
     disabled?: boolean;
+    style?: React.CSSProperties;
 }) {
     return (
         <button
@@ -80,7 +84,7 @@ function Button({
             onClick={onClick}
             disabled={disabled}
             className={`button button--${kind} ${className}`}
-            style={disabled ? { opacity: 0.65, cursor: "not-allowed" } : undefined}
+            style={{ ...style, ...(disabled ? { opacity: 0.65, cursor: "not-allowed" } : {}) }}
         >
             {children}
         </button>
@@ -147,6 +151,82 @@ function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
     );
 }
 
+// Componente Modal de Doação (PIX)
+function DonateModal({ onClose }: { onClose: () => void }) {
+    return (
+        <div style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            display: "grid",
+            placeItems: "center",
+            padding: "20px"
+        }}>
+            <div style={{
+                background: "#0d1420",
+                border: "1px solid #253247",
+                borderRadius: "20px",
+                padding: "24px",
+                maxWidth: "380px",
+                width: "100%",
+                textAlign: "center",
+                boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
+                position: "relative"
+            }}>
+                <button
+                    onClick={onClose}
+                    style={{
+                        position: "absolute",
+                        top: "16px",
+                        right: "16px",
+                        background: "none",
+                        border: "none",
+                        color: "#94a3b8",
+                        cursor: "pointer"
+                    }}
+                >
+                    <Icon name="x" size={20} />
+                </button>
+
+                <div style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "14px",
+                    background: "rgba(239, 68, 68, 0.12)",
+                    color: "#ef4444",
+                    display: "grid",
+                    placeItems: "center",
+                    margin: "0 auto 14px"
+                }}>
+                    <Icon name="heart" size={26} />
+                </div>
+
+                <h3 style={{ margin: "0 0 6px", fontSize: "20px", color: "#fff" }}>Apoie o GB Screen</h3>
+                <p style={{ fontSize: "13px", color: "#94a3b8", margin: "0 0 18px", lineHeight: 1.5 }}>
+                    Se a plataforma te ajudou, faça uma contribuição PIX de qualquer valor para manter os servidores ativos!
+                </p>
+
+                <div style={{
+                    background: "#ffffff",
+                    padding: "12px",
+                    borderRadius: "14px",
+                    display: "inline-block",
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.3)",
+                    marginBottom: "16px"
+                }}>
+                    <img src="/pix-qr.png" alt="QR Code PIX" style={{ width: "180px", height: "180px", display: "block" }} />
+                </div>
+
+                <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+                    Escaneie o QR Code acima pelo app do seu banco. Obrigado pelo apoio!
+                </p>
+            </div>
+        </div>
+    );
+}
+
 function navigate(path: string) {
     window.history.pushState({}, "", path);
     window.dispatchEvent(new PopStateEvent("popstate"));
@@ -159,6 +239,7 @@ function Landing() {
     const [codeError, setCodeError] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
+    const [showDonateModal, setShowDonateModal] = useState(false);
 
     const loadingMessages = [
         "Ligando os motores...",
@@ -268,10 +349,19 @@ function Landing() {
             <div className="ambient ambient--two" />
             <header className="landing-header">
                 <Brand />
-                <a className="github-link" href="https://github.com/gbdev7" target="_blank" rel="noreferrer">
-                    <Icon name="github" size={17} /> GitHub
-                    <span aria-hidden="true">↗</span>
-                </a>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <Button
+                        kind="ghost"
+                        onClick={() => setShowDonateModal(true)}
+                        style={{ color: "#ef4444", borderColor: "rgba(239, 68, 68, 0.3)" }}
+                    >
+                        <Icon name="heart" size={16} /> Apoiar Projeto
+                    </Button>
+                    <a className="github-link" href="https://github.com/gbdev7" target="_blank" rel="noreferrer">
+                        <Icon name="github" size={17} /> GitHub
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
             </header>
 
             <section className="hero">
@@ -371,6 +461,9 @@ function Landing() {
                 </div>
             </section>
             <footer className="landing-footer">ScreenLink <span>•</span> Compartilhamento simples. Colaboração instantânea.</footer>
+
+            {/* Modal de Doação */}
+            {showDonateModal && <DonateModal onClose={() => setShowDonateModal(false)} />}
         </main>
     );
 }
@@ -382,7 +475,8 @@ function RoomHeader({
                         onToggleShare,
                         onToggleParticipants,
                         participantCount,
-                        showParticipants
+                        showParticipants,
+                        onOpenDonate
                     }: {
     roomId: string;
     isHost: boolean;
@@ -391,6 +485,7 @@ function RoomHeader({
     onToggleParticipants: () => void;
     participantCount: number;
     showParticipants: boolean;
+    onOpenDonate: () => void;
 }) {
     const [copied, setCopied] = useState(false);
 
@@ -424,6 +519,10 @@ function RoomHeader({
             </button>
 
             <div className="header-actions">
+                <Button kind="ghost" onClick={onOpenDonate} style={{ color: "#ef4444", borderColor: "rgba(239, 68, 68, 0.3)" }}>
+                    <Icon name="heart" size={17} /> Apoiar
+                </Button>
+
                 <Button kind="ghost" onClick={onToggleParticipants} style={{ borderColor: showParticipants ? "#3b82f6" : undefined }}>
                     <Icon name="users" size={18} /> {participantCount} {participantCount === 1 ? "Pessoa" : "Pessoas"}
                 </Button>
@@ -443,7 +542,6 @@ function RoomHeader({
     );
 }
 
-// Componente da Aba de Espectadores/Participantes com Badges Corretas (Anfitrião vs Convidado)
 function ParticipantsPanel({ onClose, isHost: currentUserIsHost }: { onClose: () => void; isHost: boolean }) {
     const participants = useParticipants();
 
@@ -470,7 +568,6 @@ function ParticipantsPanel({ onClose, isHost: currentUserIsHost }: { onClose: ()
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "400px", overflowY: "auto" }}>
                 {participants.map((p) => {
-                    // Identifica o anfitrião verificando se o participante é o criador original ou possui permissão explícita de publicação
                     const isParticipantHost = p.isLocal ? currentUserIsHost : (p.permissions?.canPublish === true && p.permissions?.canPublishData === true);
 
                     return (
@@ -630,6 +727,7 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
 
     const [selectedPreset, setSelectedPreset] = useState<string>("1080p");
     const [showParticipants, setShowParticipants] = useState<boolean>(false);
+    const [showDonateModal, setShowDonateModal] = useState<boolean>(false);
 
     const isSharing = screenShareTracks.some(t => t.participant.identity === localParticipant.identity);
 
@@ -696,6 +794,7 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
                 onToggleParticipants={() => setShowParticipants(!showParticipants)}
                 participantCount={participants.length}
                 showParticipants={showParticipants}
+                onOpenDonate={() => setShowDonateModal(true)}
             />
             <section className="room-main">
                 <div className="room-meta">
@@ -716,9 +815,8 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
                         />
                     </div>
 
-                    {/* Painel Lateral de Espectadores */}
                     {showParticipants && (
-                        <ParticipantsPanel onClose={() => setShowParticipants(false)} />
+                        <ParticipantsPanel onClose={() => setShowParticipants(false)} isHost={isHost} />
                     )}
                 </div>
 
@@ -726,6 +824,8 @@ function RoomContent({ roomId, isHost }: { roomId: string; isHost: boolean }) {
                     <Icon name="shield" size={15} /> A transmissão é protegida e visível apenas para quem tem o código.
                 </p>
             </section>
+
+            {showDonateModal && <DonateModal onClose={() => setShowDonateModal(false)} />}
         </>
     );
 }
@@ -744,7 +844,6 @@ function Room() {
             return;
         }
 
-        // Solicitação estritamente obrigatória do nome
         let guestName = "";
         while (!guestName || !guestName.trim()) {
             const input = prompt("Digite obrigatoriamente seu nome para entrar na sala:");
