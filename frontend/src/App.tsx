@@ -8,6 +8,7 @@ import {
     useParticipants
 } from "@livekit/components-react";
 import { Track, VideoPreset, VideoPresets } from "livekit-client";
+import pixQrImg from "./pix.png"; // ou "../public/pix.png" dependendo da localização exata
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
 
@@ -153,8 +154,6 @@ function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
 
 // Componente Modal de Doação (PIX)
 function DonateModal({ onClose }: { onClose: () => void }) {
-    const [imgError, setImgError] = useState(false);
-
     return (
         <div style={{
             position: "fixed",
@@ -220,18 +219,11 @@ function DonateModal({ onClose }: { onClose: () => void }) {
                     minWidth: "180px",
                     minHeight: "180px"
                 }}>
-                    {!imgError ? (
-                        <img
-                            src="/pix.png"
-                            alt="QR Code PIX"
-                            onError={() => setImgError(true)}
-                            style={{ width: "180px", height: "180px", display: "block", objectFit: "contain" }}
-                        />
-                    ) : (
-                        <div style={{ width: "180px", height: "180px", display: "grid", placeItems: "center", color: "#000", fontSize: "12px" }}>
-                            Imagem não encontrada em /public/pix.png
-                        </div>
-                    )}
+                    <img
+                        src={pixQrImg}
+                        alt="QR Code PIX"
+                        style={{ width: "180px", height: "180px", display: "block", objectFit: "contain" }}
+                    />
                 </div>
 
                 <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
