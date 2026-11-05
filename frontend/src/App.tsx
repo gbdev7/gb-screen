@@ -8,7 +8,6 @@ import {
     useParticipants
 } from "@livekit/components-react";
 import { Track, VideoPreset, VideoPresets } from "livekit-client";
-import pixQrImg from "./pix.png"; // ou "../public/pix.png" dependendo da localização exata
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
 
@@ -152,7 +151,6 @@ function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
     );
 }
 
-// Componente Modal de Doação (PIX)
 function DonateModal({ onClose }: { onClose: () => void }) {
     return (
         <div style={{
@@ -220,7 +218,7 @@ function DonateModal({ onClose }: { onClose: () => void }) {
                     minHeight: "180px"
                 }}>
                     <img
-                        src={pixQrImg}
+                        src="/pix.png"
                         alt="QR Code PIX"
                         style={{ width: "180px", height: "180px", display: "block", objectFit: "contain" }}
                     />
@@ -469,7 +467,6 @@ function Landing() {
             </section>
             <footer className="landing-footer">ScreenLink <span>•</span> Compartilhamento simples. Colaboração instantânea.</footer>
 
-            {/* Modal de Doação */}
             {showDonateModal && <DonateModal onClose={() => setShowDonateModal(false)} />}
         </main>
     );
@@ -581,7 +578,7 @@ function ParticipantsPanel({ onClose, isHost: currentUserIsHost }: { onClose: ()
                         <div key={p.sid} style={{
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between",
+                            justify: "space-between",
                             padding: "8px 12px",
                             background: "rgba(255,255,255,0.04)",
                             borderRadius: "8px",
