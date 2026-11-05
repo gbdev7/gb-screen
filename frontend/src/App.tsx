@@ -443,8 +443,8 @@ function RoomHeader({
     );
 }
 
-// Componente da Aba de Espectadores/Participantes
-function ParticipantsPanel({ onClose }: { onClose: () => void }) {
+// Componente da Aba de Espectadores/Participantes com Badges Corretas (Anfitrião vs Convidado)
+function ParticipantsPanel({ onClose, isHost: currentUserIsHost }: { onClose: () => void; isHost: boolean }) {
     const participants = useParticipants();
 
     return (
@@ -470,12 +470,14 @@ function ParticipantsPanel({ onClose }: { onClose: () => void }) {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "400px", overflowY: "auto" }}>
                 {participants.map((p) => {
-                    const isHost = p.permissions?.canPublish;
+                    // Identifica o anfitrião verificando se o participante é o criador original ou possui permissão explícita de publicação
+                    const isParticipantHost = p.isLocal ? currentUserIsHost : (p.permissions?.canPublish === true && p.permissions?.canPublishData === true);
+
                     return (
                         <div key={p.sid} style={{
                             display: "flex",
                             alignItems: "center",
-                            justify: "space-between",
+                            justifyContent: "space-between",
                             padding: "8px 12px",
                             background: "rgba(255,255,255,0.04)",
                             borderRadius: "8px",
@@ -484,19 +486,18 @@ function ParticipantsPanel({ onClose }: { onClose: () => void }) {
               <span style={{ fontSize: "13px", fontWeight: 500, color: "#f8fafc" }}>
                 {p.name || p.identity.split("-")[0]}
               </span>
-                            {isHost && (
-                                <span style={{
-                                    fontSize: "10px",
-                                    background: "rgba(59, 130, 246, 0.2)",
-                                    color: "#60a5fa",
-                                    border: "1px solid rgba(59, 130, 246, 0.3)",
-                                    padding: "2px 6px",
-                                    borderRadius: "4px",
-                                    fontWeight: 600
-                                }}>
-                  Anfitrião
-                </span>
-                            )}
+
+                            <span style={{
+                                fontSize: "10px",
+                                background: isParticipantHost ? "rgba(59, 130, 246, 0.2)" : "rgba(148, 163, 184, 0.12)",
+                                color: isParticipantHost ? "#60a5fa" : "#94a3b8",
+                                border: isParticipantHost ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid rgba(148, 163, 184, 0.2)",
+                                padding: "2px 8px",
+                                borderRadius: "4px",
+                                fontWeight: 600
+                            }}>
+                {isParticipantHost ? "Anfitrião" : "Convidado"}
+              </span>
                         </div>
                     );
                 })}
