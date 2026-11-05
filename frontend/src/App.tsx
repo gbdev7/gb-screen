@@ -222,14 +222,14 @@ function DonateModal({ onClose }: { onClose: () => void }) {
                 }}>
                     {!imgError ? (
                         <img
-                            src="/pix-qr.png"
+                            src="/pix.png"
                             alt="QR Code PIX"
                             onError={() => setImgError(true)}
                             style={{ width: "180px", height: "180px", display: "block", objectFit: "contain" }}
                         />
                     ) : (
                         <div style={{ width: "180px", height: "180px", display: "grid", placeItems: "center", color: "#000", fontSize: "12px" }}>
-                            Imagem não encontrada em /public/pix-qr.png
+                            Imagem não encontrada em /public/pix.png
                         </div>
                     )}
                 </div>
