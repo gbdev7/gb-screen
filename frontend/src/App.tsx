@@ -391,13 +391,14 @@ function Landing() {
                 </div>
                 <div className="eyebrow"><span /> Compartilhamento seguro em tempo real</div>
 
-                {/* Título Principal com Animated Shiny Text */}
-                <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                {/* Título Principal Ajustado (Branco e Azul) */}
+                <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', lineHeight: 1.1, textAlign: 'center' }}>
                     <AnimatedText
-                        text="Compartilhe sua tela"
-                        textClassName="font-bold leading-tight"
+                        text="Compartilhe sua tela instantaneamente"
+                        textClassName="font-bold"
+                        style={{ backgroundImage: "linear-gradient(110deg, #e2e8f0 45%, #ffffff 55%, #e2e8f0)", color: "transparent" }}
                     />
-                    <span>instantaneamente via <span>link privado</span></span>
+                    <span style={{ color: "#3b82f6", fontWeight: "bold" }}>via link privado</span>
                 </h1>
 
                 <p className="hero-copy">Transmissão em tempo real de alta performance sem necessidade de instalação de software ou cadastro.</p>
@@ -415,25 +416,27 @@ function Landing() {
                         />
                         {nameError && <span className="join-error" style={{ color: "#ef4444" }}>{nameError}</span>}
 
-                        {/* Botão de Criação com Borda Iluminada e Shimmer Text no Loading */}
+                        {/* Botão de Criação Ajustado para mostrar o texto em branco durante o loading */}
                         <div className="mt-[11px]">
-                            <GlowBorderButton type="submit" disabled={loading}>
+                            <GlowBorderButton type="submit" disabled={loading} style={{ width: "100%" }}>
                                 {loading ? (
-                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center", width: "100%" }}>
                                         <span style={{
-                                            width: "14px", height: "14px",
+                                            width: "16px", height: "16px",
                                             border: "2px solid rgba(255,255,255,0.3)",
                                             borderTopColor: "#fff",
                                             borderRadius: "50%",
                                             display: "inline-block",
                                             animation: "spin 0.8s linear infinite"
                                         }} />
-                                        <TextShimmer className="text-sm font-semibold">
+                                        <span style={{ color: "#fff", fontWeight: 600, fontSize: "14px" }}>
                                             {loadingMessages[loadingMsgIndex]}
-                                        </TextShimmer>
+                                        </span>
                                     </div>
                                 ) : (
-                                    <>Criar Sala Privada <Icon name="arrow" size={19} /></>
+                                    <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", width: "100%" }}>
+                                        Criar Sala Privada <Icon name="arrow" size={19} />
+                                    </span>
                                 )}
                             </GlowBorderButton>
                         </div>
