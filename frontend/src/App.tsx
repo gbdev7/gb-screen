@@ -9,7 +9,13 @@ import {
 } from "@livekit/components-react";
 import { Track, VideoPreset, VideoPresets } from "livekit-client";
 
-// QR Code PIX embutido em Base64 para garantir exibição 100% confiável em produção
+// Importações dos novos componentes UI (Shadcn/MagicUI style)
+import { TextShimmer } from "./components/ui/be-ui-text-animation";
+import { AnimatedText } from "./components/ui/animated-shiny-text";
+import { GlowBorderButton } from "./components/ui/glow-border-button";
+import { ShaderAnimation } from "./components/ui/neno-shader";
+
+// QR Code PIX embutido em Base64
 const PIX_QR_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFm0lEQVR4nO3dQY4bMQwEwXD+/6ebF/gCwd5IVlU1SncPgkWyWRb1eDx+f/58/n/589vff/75/fl8v38+f/778+evP3/++vPnnz9//vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fPPn3/+/HP8//T3vv98/vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fP/4b+A8P/h/4Pw/++/n3/+/HP8//T3vv98/vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efP8f/T3vv+8/nnzz9//vnzz59//vzz558//xz/P/297z+ff/788+efP//8+ef4/+nvff/5/PPnnz///Pnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fP/4b+A8P/h/4Pw/++/n3/+/HP8//T3vv98/vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fP5/gH0YhWlK4fU3AAAAABJRU5ErkJggg==";
 
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
@@ -355,10 +361,12 @@ function Landing() {
     ];
 
     return (
-        <main className="landing">
+        <main className="landing relative overflow-hidden">
+            <ShaderAnimation /> {/* Neno Shader de Fundo */}
             <div className="ambient ambient--one" />
             <div className="ambient ambient--two" />
-            <header className="landing-header">
+
+            <header className="landing-header relative z-10">
                 <Brand />
                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                     <Button
@@ -375,14 +383,23 @@ function Landing() {
                 </div>
             </header>
 
-            <section className="hero">
+            <section className="hero relative z-10">
                 <div className="hero-icon">
                     <span className="hero-icon__glow" />
                     <Icon name="monitor" size={39} />
                     <span className="hero-icon__status" />
                 </div>
                 <div className="eyebrow"><span /> Compartilhamento seguro em tempo real</div>
-                <h1>Compartilhe sua tela<br />instantaneamente via <span>link privado</span></h1>
+
+                {/* Título Principal com Animated Shiny Text */}
+                <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <AnimatedText
+                        text="Compartilhe sua tela"
+                        textClassName="font-bold leading-tight"
+                    />
+                    <span>instantaneamente via <span>link privado</span></span>
+                </h1>
+
                 <p className="hero-copy">Transmissão em tempo real de alta performance sem necessidade de instalação de software ou cadastro.</p>
 
                 <div className="create-card">
@@ -398,24 +415,29 @@ function Landing() {
                         />
                         {nameError && <span className="join-error" style={{ color: "#ef4444" }}>{nameError}</span>}
 
-                        <Button type="submit" className="create-button" disabled={loading}>
-                            {loading ? (
-                                <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
-                    <span style={{
-                        width: "14px",
-                        height: "14px",
-                        border: "2px solid rgba(255,255,255,0.3)",
-                        borderTopColor: "#fff",
-                        borderRadius: "50%",
-                        display: "inline-block",
-                        animation: "spin 0.8s linear infinite"
-                    }} />
-                                    {loadingMessages[loadingMsgIndex]}
-                  </span>
-                            ) : (
-                                <>Criar Sala Privada <Icon name="arrow" size={19} /></>
-                            )}
-                        </Button>
+                        {/* Botão de Criação com Borda Iluminada e Shimmer Text no Loading */}
+                        <div className="mt-[11px]">
+                            <GlowBorderButton type="submit" disabled={loading}>
+                                {loading ? (
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center" }}>
+                                        <span style={{
+                                            width: "14px", height: "14px",
+                                            border: "2px solid rgba(255,255,255,0.3)",
+                                            borderTopColor: "#fff",
+                                            borderRadius: "50%",
+                                            display: "inline-block",
+                                            animation: "spin 0.8s linear infinite"
+                                        }} />
+                                        <TextShimmer className="text-sm font-semibold">
+                                            {loadingMessages[loadingMsgIndex]}
+                                        </TextShimmer>
+                                    </div>
+                                ) : (
+                                    <>Criar Sala Privada <Icon name="arrow" size={19} /></>
+                                )}
+                            </GlowBorderButton>
+                        </div>
+
                         <p className="form-note"><Icon name="shield" size={14} /> Sua sala é privada e expira automaticamente.</p>
                     </form>
 
@@ -456,8 +478,10 @@ function Landing() {
                                 }} />
                             </div>
                             <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", display: "block", marginTop: "6px", textAlign: "center" }}>
-                  {loadingMessages[loadingMsgIndex]}
-                </span>
+                                <TextShimmer duration={1.5}>
+                                    {loadingMessages[loadingMsgIndex]}
+                                </TextShimmer>
+                            </span>
                         </div>
                     )}
                 </div>
@@ -471,7 +495,10 @@ function Landing() {
                     ))}
                 </div>
             </section>
-            <footer className="landing-footer">ScreenLink <span>•</span> Compartilhamento simples. Colaboração instantânea.</footer>
+
+            <footer className="landing-footer relative z-10">
+                ScreenLink <span>•</span> Compartilhamento simples. Colaboração instantânea.
+            </footer>
 
             {showDonateModal && <DonateModal onClose={() => setShowDonateModal(false)} />}
         </main>
@@ -584,7 +611,7 @@ function ParticipantsPanel({ onClose, isHost: currentUserIsHost }: { onClose: ()
                         <div key={p.sid} style={{
                             display: "flex",
                             alignItems: "center",
-                            justify: "space-between",
+                            justifyContent: "space-between",
                             padding: "8px 12px",
                             background: "rgba(255,255,255,0.04)",
                             borderRadius: "8px",

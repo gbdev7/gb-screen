@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@livekit/components-react": "^2.9.24",
+    "clsx": "^2.1.1",
     "livekit-client": "^2.23.0",
-    "lucide-react": "^1.58.0",
+    "lucide-react": "^1.70.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
