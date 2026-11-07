@@ -11,7 +11,6 @@ import { Track, VideoPreset, VideoPresets } from "livekit-client";
 
 // Importações dos novos componentes UI (Shadcn/MagicUI style)
 import { TextShimmer } from "./components/ui/be-ui-text-animation";
-import { AnimatedText } from "./components/ui/animated-shiny-text";
 import { GlowBorderButton } from "./components/ui/glow-border-button";
 import { ShaderAnimation } from "./components/ui/neno-shader";
 
@@ -391,8 +390,7 @@ function Landing() {
                 </div>
                 <div className="eyebrow"><span /> Compartilhamento seguro em tempo real</div>
 
-
-                {/* Título Principal Ajustado (Cores Nativas) */}
+                {/* Título Principal Ajustado (Cores Nativas: Branco + Azul) */}
                 <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', lineHeight: 1.1, textAlign: 'center', fontSize: '2.8rem' }}>
                     <span style={{ color: "#ffffff", fontWeight: "bold" }}>
                         Compartilhe sua tela instantaneamente
@@ -417,25 +415,42 @@ function Landing() {
                         />
                         {nameError && <span className="join-error" style={{ color: "#ef4444" }}>{nameError}</span>}
 
-                        {/* Botão de Criação Ajustado para mostrar o texto em branco durante o loading */}
+                        {/* Botão de Criação Ajustado com Texto Forçado Visível */}
                         <div className="mt-[11px]">
-                            <GlowBorderButton type="submit" disabled={loading} style={{ width: "100%" }}>
+                            <GlowBorderButton type="submit" disabled={loading} style={{ width: "100%", minHeight: "48px" }}>
                                 {loading ? (
-                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center", width: "100%" }}>
+                                    <div style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        justifyContent: "center",
+                                        width: "100%",
+                                        position: "relative",
+                                        zIndex: 10
+                                    }}>
                                         <span style={{
-                                            width: "16px", height: "16px",
-                                            border: "2px solid rgba(255,255,255,0.3)",
-                                            borderTopColor: "#fff",
+                                            width: "16px",
+                                            height: "16px",
+                                            border: "2px solid rgba(255, 255, 255, 0.3)",
+                                            borderTopColor: "#ffffff",
                                             borderRadius: "50%",
                                             display: "inline-block",
+                                            flexShrink: 0,
                                             animation: "spin 0.8s linear infinite"
                                         }} />
-                                        <span style={{ color: "#fff", fontWeight: 600, fontSize: "14px" }}>
+                                        <span style={{
+                                            color: "#ffffff",
+                                            fontWeight: 600,
+                                            fontSize: "14px",
+                                            display: "inline-block",
+                                            opacity: 1,
+                                            visibility: "visible"
+                                        }}>
                                             {loadingMessages[loadingMsgIndex]}
                                         </span>
                                     </div>
                                 ) : (
-                                    <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", width: "100%" }}>
+                                    <span style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", width: "100%", color: "#ffffff", fontWeight: 600 }}>
                                         Criar Sala Privada <Icon name="arrow" size={19} />
                                     </span>
                                 )}
