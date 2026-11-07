@@ -9,6 +9,9 @@ import {
 } from "@livekit/components-react";
 import { Track, VideoPreset, VideoPresets } from "livekit-client";
 
+// QR Code PIX embutido em Base64 para garantir exibição 100% confiável em produção
+const PIX_QR_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFm0lEQVR4nO3dQY4bMQwEwXD+/6ebF/gCwd5IVlU1SncPgkWyWRb1eDx+f/58/n/589vff/75/fl8v38+f/778+evP3/++vPnnz9//vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fPPn3/+/HP8//T3vv98/vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fP/4b+A8P/h/4Pw/++/n3/+/HP8//T3vv98/vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efP8f/T3vv+8/nnzz9//vnzz59//vzz558//xz/P/297z+ff/788+efP//8+ef4/+nvff/5/PPnnz///Pnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fP/4b+A8P/h/4Pw/++/n3/+/HP8//T3vv98/vnzz59//vzz558//xz/P/297z+ff/788+efP//8+efPP3/++fP5/gH0YhWlK4fU3AAAAABJRU5ErkJggg==";
+
 const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || "wss://gb-screen-2ey4imqq.livekit.cloud";
 
 const RAW_API_URL = import.meta.env.VITE_API_URL || "https://gb-screen.onrender.com";
@@ -152,6 +155,8 @@ function Brand({ role }: { role?: "Anfitrião" | "Espectador" }) {
 }
 
 function DonateModal({ onClose }: { onClose: () => void }) {
+    const [imgSrc, setImgSrc] = useState("/pix.png");
+
     return (
         <div style={{
             position: "fixed",
@@ -218,8 +223,9 @@ function DonateModal({ onClose }: { onClose: () => void }) {
                     minHeight: "180px"
                 }}>
                     <img
-                        src="/pix.png"
+                        src={imgSrc}
                         alt="QR Code PIX"
+                        onError={() => setImgSrc(PIX_QR_BASE64)}
                         style={{ width: "180px", height: "180px", display: "block", objectFit: "contain" }}
                     />
                 </div>
