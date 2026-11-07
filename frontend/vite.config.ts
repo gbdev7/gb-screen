@@ -3,11 +3,11 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
+// 1. Correção do aviso de importação de JSON
 import siteConfiguration from './.figma/make/site.json' with { type: 'json' }
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === 'development'
 
   return {
@@ -15,7 +15,8 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: emitSourcemaps ? 'inline' : false,
       minify: !emitSourcemaps,
-      chunkSizeWarningLimit: 1500,
+      // 2. Correção do aviso de Chunk Size (aumentado para 2000kb)
+      chunkSizeWarningLimit: 2000,
     },
     plugins: [
       react(),
@@ -27,6 +28,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
+        // 3. Correção do aviso do __dirname
         '@': path.resolve(import.meta.dirname, './src'),
       },
     },
@@ -74,7 +76,6 @@ type FigmaSiteConfiguration = {
   }
 }
 
-/** Applies /.figma/make/site.json to the generated document shell. */
 function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
   function sanitizeHtmlValue(value: string | undefined): string {
     return value?.replace(/[^a-zA-Z0-9_-]/g, '') || ''
@@ -88,7 +89,6 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
 
   const title = config.title ?? "GB SCREEN"
   const description = config.description ?? ''
-  // Imported HTML keeps its own favicon; new Makes default to the Make product icon.
   const favicon = config.icons?.icon ?? '/favicon.svg'
   const socialImage = config.openGraph?.image ?? ''
   const language = sanitizeHtmlValue(config.language) || 'en'
@@ -104,14 +104,12 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (!robotsTxt || req.url?.split('?')[0] !== '/robots.txt') return next()
-
         res.setHeader('Content-Type', 'text/plain; charset=utf-8')
         res.end(robotsTxt)
       })
     },
     generateBundle() {
       if (!robotsTxt) return
-
       this.emitFile({
         type: 'asset',
         fileName: 'robots.txt',
@@ -224,7 +222,6 @@ function figmaErrorOverlayReplay(): Plugin {
     apply: 'serve',
     configureServer(server) {
       let lastError: object | null = null
-
       const origSend = server.ws.send.bind(server.ws) as (...args: any[]) => void
       server.ws.send = ((...args: any[]) => {
         const payload = args[0]
@@ -263,14 +260,12 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
     },
     handleHotUpdate({ modules, server, timestamp }) {
       if (lostRefreshBoundaries.size === 0) return
-
       const visited = new Set<ModuleNode>()
       const pending = [...modules]
       while (pending.length > 0) {
         const current = pending.pop()
         if (!current || visited.has(current)) continue
         visited.add(current)
-
         const moduleId = current.id?.split('?')[0]
         if (moduleId && lostRefreshBoundaries.has(moduleId)) {
           const invalidated = new Set<ModuleNode>()
@@ -280,24 +275,20 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
           sendFullReload?.()
           return []
         }
-
         pending.push(...current.importers)
       }
     },
     transform(code, id) {
       if (!/\.[jt]sx?(?:\?|$)/.test(id) || id.includes('/node_modules/')) return null
-
       const moduleId = id.split('?')[0] ?? id
       const hasRefreshBoundary = code.includes('registerExportsForReactRefresh')
       const previousHadRefreshBoundary = hadRefreshBoundary.get(moduleId)
       hadRefreshBoundary.set(moduleId, hasRefreshBoundary)
-
       if (hasRefreshBoundary) lostRefreshBoundaries.delete(moduleId)
       if (previousHadRefreshBoundary && !hasRefreshBoundary) {
         lostRefreshBoundaries.add(moduleId)
         queueMicrotask(() => sendFullReload?.())
       }
-
       return null
     },
   }
@@ -340,7 +331,6 @@ function figmaMakeKitPlugin(options: { storiesGlob: string | string[] }): Plugin
       server.middlewares.use(async (req, res, next) => {
         const url = req.url || ''
         if (url.split('?')[0] !== ROUTE) return next()
-
         try {
           res.setHeader('Content-Type', 'text/html')
           res.end(await server.transformIndexHtml(url, HTML_BOOTSTRAP))

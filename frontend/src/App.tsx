@@ -391,14 +391,15 @@ function Landing() {
                 </div>
                 <div className="eyebrow"><span /> Compartilhamento seguro em tempo real</div>
 
-                {/* Título Principal Ajustado (Branco e Azul) */}
-                <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', lineHeight: 1.1, textAlign: 'center' }}>
-                    <AnimatedText
-                        text="Compartilhe sua tela instantaneamente"
-                        textClassName="font-bold"
-                        style={{ backgroundImage: "linear-gradient(110deg, #e2e8f0 45%, #ffffff 55%, #e2e8f0)", color: "transparent" }}
-                    />
-                    <span style={{ color: "#3b82f6", fontWeight: "bold" }}>via link privado</span>
+
+                {/* Título Principal Ajustado (Cores Nativas) */}
+                <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', lineHeight: 1.1, textAlign: 'center', fontSize: '2.8rem' }}>
+                    <span style={{ color: "#ffffff", fontWeight: "bold" }}>
+                        Compartilhe sua tela instantaneamente
+                    </span>
+                    <span style={{ color: "#3b82f6", fontWeight: "bold" }}>
+                        via link privado
+                    </span>
                 </h1>
 
                 <p className="hero-copy">Transmissão em tempo real de alta performance sem necessidade de instalação de software ou cadastro.</p>
@@ -412,7 +413,7 @@ function Landing() {
                                 setName(val);
                                 if (val.trim()) setNameError("");
                             }}
-                            placeholder="Digite seu nome obrigatoriamente"
+                            placeholder="Digite seu nome"
                         />
                         {nameError && <span className="join-error" style={{ color: "#ef4444" }}>{nameError}</span>}
 
